@@ -88,8 +88,8 @@ After connecting, Railway will show a configuration screen:
 1. Click **Add Variables**
 2. Add these environment variables:
    - `PORT`: `10000`
-   - `MONGO_URI`: (Your MongoDB Atlas connection string from `.env`)
-   - `JWT_SECRET`: (Your JWT secret from `.env`)
+   - `MONGO_URI`: MONGO_URI=mongodb+srv://varneywilson30_db_user:yZAwxvuWBppqxqoi@cluster0.vwnz4bm.mongodb.net/?appName=Cluster0
+   - `JWT_SECRET`: Yhahfi
 
 ### **3.4 Configure Build & Start Commands**
 
@@ -104,7 +104,15 @@ OR create a **Procfile** in root:
 ```
 web: cd Backend && npm start
 ```
-
+> node.js@1.0.0 start
+> node server.js
+◇ injected env (0) from .env // tip: ⌘ multiple files { path: ['.env.local', '.env'] }
+MongoDB connection failed: The `uri` parameter to `openUri()` must be a string, got "undefined". Make sure the first parameter to `mongoose.connect()` or `mongoose.createConnection()` is a string.
+npm warn config production Use `--omit=dev` instead.
+> node.js@1.0.0 start
+> node server.js
+◇ injected env (0) from .env // tip: ⌘ enable debugging { debug: true }
+MongoDB connection failed: The `uri` parameter to `openUri()` must be a string, got "undefined". Make sure the first parameter to `mongoose.connect()` or `mongoose.createConnection()` is a string
 ### **3.5 Deploy!**
 
 1. Click **Deploy** button

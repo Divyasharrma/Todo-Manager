@@ -3,11 +3,17 @@ const mongoose = require("mongoose");
 
 const connectDB = async () => {
     try {
-        if (process.env.MONGO_URI?.startsWith("mongodb+srv://")) {
+        const mongoUri = process.env.MONGO_URI;
+
+        if (!mongoUri) {
+            throw new Error("MONGO_URI is missing. Check Backend/.env");
+        }
+
+        if (mongoUri.startsWith("mongodb+srv://")) {
             dns.setServers(["8.8.8.8", "1.1.1.1"]);
         }
 
-        await mongoose.connect(process.env.MONGO_URI);
+        await mongoose.connect(mongoUri);
         console.log("MongoDB Connected ✅");
     } catch (error) {
         throw new Error(`MongoDB connection failed: ${error.message}`, {
