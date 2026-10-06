@@ -4,8 +4,8 @@ import Register from "./Register";
 import Typewriter from "./Typewriter";
 
 export default function TodoApp() {
-    const [token, setToken] = useState(() => sessionStorage.getItem("token") || ""); 
-const [todos, setTodos] = useState([]);
+    const [token, setToken] = useState(() => sessionStorage.getItem("token") || "");
+    const [todos, setTodos] = useState([]);
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [title, setTitle] = useState("");
@@ -42,33 +42,43 @@ const [todos, setTodos] = useState([]);
     };
 
     React.useEffect(() => {
-        let ignore = false;
-        const fetchAndSetTodos = async () => {
-            if (token) {
-                setAuthToken(token);
-                try {
-                    const meRes = await getMe();
-                    if (!ignore) setUsername(meRes.data.name || meRes.data?.name || "");
-                } catch (err) {
-                    if (!ignore) setUsername("");
-                }
-                try {
-                    setLoading(true);
-                    setError("");
-                    const res = await getTodos();
-                    if (!ignore) setTodos(res.data.data);
-                } catch (error) {
-                    if (!ignore) setError("Failed to fetch todos");
-                } finally {
-                    if (!ignore) setLoading(false);
-                }
-            } else {
-                setTodos([]);
+    let ignore = false;
+
+    const fetchAndSetTodos = async () => {
+        if (!token) {
+            setTodos([]);
+            setUsername("");
+            return;
+        }
+
+        setAuthToken(token);
+
+        try {
+            setLoading(true);
+            setError("");
+
+            const res = await getTodos();
+
+            if (!ignore) {
+                setTodos(res.data.data);
             }
-        };
-        fetchAndSetTodos();
-        return () => { ignore = true; };
-    }, [token]);
+        } catch (error) {
+            if (!ignore) {
+                setError("Failed to fetch todos");
+            }
+        } finally {
+            if (!ignore) {
+                setLoading(false);
+            }
+        }
+    };
+
+    fetchAndSetTodos();
+
+    return () => {
+        ignore = true;
+    };
+}, [token]);
 
 
     useEffect(() => {
@@ -117,10 +127,16 @@ const [todos, setTodos] = useState([]);
         e.preventDefault();
         setLoading(true);
         setError("");
+
         try {
             const res = await login({ email, password });
+
             setToken(res.data.token);
             sessionStorage.setItem("token", res.data.token);
+
+            // Use the user returned by login
+            setUsername(res.data.user?.name || "");
+
         } catch (error) {
             setError(error.response?.data?.message || "Login failed");
         } finally {
@@ -131,7 +147,7 @@ const [todos, setTodos] = useState([]);
     const handleSignOut = () => {
 
         sessionStorage.removeItem("token");
-        
+
         setToken("");
         logout();
         setTodos([]);

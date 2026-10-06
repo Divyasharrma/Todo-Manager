@@ -23,16 +23,20 @@ exports.getTodos = async (req, res) => {
         const { page = 1, limit = 5, search = "", completed } = req.query;
         const query = {
             user: req.user,
-            title: { $regex: search, $options: "i" }
+            title: { $regex: "", $options: "i" }
         };
         if (completed !== undefined) {
             query.completed = completed === "true";
         }
-        const todos = await Todo.find(query)
-            .skip((page - 1) * limit)
-            .limit(parseInt(limit))
-            .sort({ createdAt: -1 });
-        const total = await Todo.countDocuments(query);
+        const [todos, total] = await Promise.all([
+            Todo.find(query)
+                .skip((page - 1) * limit)
+                .limit(parseInt(limit))
+                .sort({ createdAt: -1 }),
+
+            Todo.countDocuments(query)
+        ]);
+
         res.json({
             total,
             page: Number(page),
